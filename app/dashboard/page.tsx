@@ -22,7 +22,7 @@ export default function OwnerDashboard() {
 
     const { data } = await supabase
       .from("devices")
-      .select("*, tracking_logs(latitude, longitude, recorded_at)")
+      .select("*")
       .eq("owner_id", user.id)
       .order("created_at", { ascending: false });
 
