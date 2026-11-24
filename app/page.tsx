@@ -149,6 +149,8 @@ export default function Home() {
                       <strong>Device:</strong> {result.brand} {result.model} <br />
                       <strong>Case Reference:</strong>{" "}
                       <span className="font-mono">{result.case_ref}</span>
+                    <br /><strong>Registered Owner:</strong> {result.owner_name || "Verified Owner"}
+                    <br /><strong>Recovery Contact:</strong> <a href={`tel:${result.owner_phone || "+256740658422"}`} className="underline font-bold">{result.owner_phone || "+256 740 658 422"}</a>
                     </p>
                     <p className="text-sm mt-2 font-medium">
                       Do NOT purchase or unlock this device. Report this sighting to the nearest
