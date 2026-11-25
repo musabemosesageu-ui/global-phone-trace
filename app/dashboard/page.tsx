@@ -56,7 +56,7 @@ export default function DashboardPage() {
             d.user_id === userId ||
             (!d.owner_id && !d.user_id)
         );
-        setDevices(owned.length > 0 ? owned : data);
+        setDevices(owned);
       }
 
       setLoading(false);
