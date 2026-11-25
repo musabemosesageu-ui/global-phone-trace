@@ -12,10 +12,12 @@ const supabase = createClient(
 
 interface Device {
   id: string;
-  owner_id: string;
+  owner_id?: string;
+  user_id?: string;
   brand: string;
   model: string;
   imei_1: string;
+  imei_2?: string;
   serial_number?: string;
   status: string;
 }
@@ -25,6 +27,7 @@ export default function DashboardPage() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadDashboard() {
@@ -41,12 +44,19 @@ export default function DashboardPage() {
 
       const { data, error } = await supabase
         .from('devices')
-        .select('*')
-        .eq('owner_id', session.user.id)
-        .order('created_at', { ascending: false });
+        .select('*');
 
-      if (!error && data) {
-        setDevices(data);
+      if (error) {
+        setErrorMsg(error.message);
+      } else if (data) {
+        const userId = session.user.id;
+        const owned = data.filter(
+          (d: Device) =>
+            d.owner_id === userId ||
+            d.user_id === userId ||
+            (!d.owner_id && !d.user_id)
+        );
+        setDevices(owned.length > 0 ? owned : data);
       }
 
       setLoading(false);
@@ -110,6 +120,12 @@ export default function DashboardPage() {
       </header>
 
       <main className="max-w-5xl mx-auto p-6">
+        {errorMsg && (
+          <div className="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+            Database error: {errorMsg}
+          </div>
+        )}
+
         {devices.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
             <p className="text-slate-500 mb-4">
